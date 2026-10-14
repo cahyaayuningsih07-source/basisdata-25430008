@@ -1,0 +1,294 @@
+# Laporan Praktikum Basis Data - Pertemuan NN
+
+**Nama:Cahya Ayuningsih  
+**NIM:25430008  
+**Kelas:A 
+**Tanggal:13 OKTOBER 2026
+
+
+## 1. Tujuan Praktikum
+
+Tujuan praktikum Modul 3 adalah memahami pemodelan data menggunakan Entity-Relationship Diagram (ERD), mengidentifikasi entitas dan atribut, menentukan hubungan serta kardinalitas ant entitas, dan menyusun ERD proyek perpustakaan berdasarkan kebutuhan data yang telah dianalisis pada Pertemuan 2.
+## 2. Ringkasan Dasar Teori
+
+Entity-Relationship Diagram (ERD) merupakan diagram yang digunakan untuk menggambarkan entitas, atribut, dan hubungan ant entitas dalam suatu sistem basis data. Entitas mewakili objek yang datanya dikelola, sedangkan atribut menjelaskan karakteristik entitas tersebut.
+
+Relasi menunjukkan hubungan antar entitas, sementara kardinalitas menjelaskan jumlah keterhubungan ant entitas, seperti satu-ke-satu, satu-ke-banyak, atau banyak-ke-banyak. ERD membantu memastikan kebutuhan informasi dapat dipenuhi melalui struktur data yang dirancang sebelum masuk ke tahap normalisasi dan pembuatan tabel.
+
+## 3. Hasil Langkah Percobaan
+
+4.1 Entitas Kandidat
+|ID|	|Entitas ||Keterangan|
+|E-01|	|Anggota||Data mahasiswa yang menjadi anggota Kopma.
+|E-02|	|Barang| |Data barang yang dijual Kopma.
+|E-03|	|Pemasok||Data pihak yang memasok barang.
+|E-04|	|Transaksi||Data transaksi penjualan.
+|E-05|	|Detail Transaksi||Data barang yang terdapat dalam transaksi.
+|E-06|	|Pembayaran|Data pembayaran transaksi.
+
+D.1 Dari Entitas Kandidat ke Entitas
+Berdasarkan tabel entitas kandidat, langkah selanjutnya adalah mengidentifikasi atribut dari setiap entitas, menentukan atribut kunci utama (primary key), kunci alternatif (alternate key), dan atribut turunan.
+
+1. Hasil Identifikasi Entitas dan Atribut
+|Entitas| |Primary Key| |Alternate Key| |Atribut Lain|
+|Anggota| |id_anggota|	|nim_anggota|	|nama_anggota, alamat, no_hp|
+|Barang|  |id_barang|	|kode_barang|	|nama_barang, harga_jual, stok
+|Pemasok| |id_pemasok|	|kode_pemasok|	|nama_pemasok, alamat_pemasok, no_hp
+|Transaksi||id_transaksi|no_nota_penjualan||tanggal_transaksi, id_anggota, total_transaksi
+|Detail Transaksi||id_detail_transaksi|	—|id_transaksi, id_barang, jumlah, harga_jual, subtotal
+|Pembayaran||id_pembayaran||no_referensi||id_transaksi, tanggal_pembayaran, metode_pembayaran, jumlah_bayar
+Keterangan:
+- Primary key (PK): atribut yang menjadi identitas unik setiap data.
+- Alternate key (AK): atribut selain PK yang nilainya harus unik, misalnya NIM anggota dan nomor nota penjualan.
+- Atribut turunan: atribut yang nilainya dapat dihitung dari atribut lain, misalnya subtotal dari jumlah barang dikalikan harga jual, dan total_transaksi dari penjumlahan seluruh subtotal.
+Catatan: Nama atribut di atas merupakan rancangan awal dan dapat disesuaikan dengan hasil analisis kebutuhan data pada Pertemuan 2.
+
+2. Pemecahan Entitas Pembelian dan Detailnya
+Entitas pembelian dan detail pembelian dipisahkan menjadi dua entitas agar satu transaksi pembelian dapat mencatat beberapa barang.
+|Entitas|	|Primary Key|	|Atribut|
+|Pembelian|	|id_pembelian|	|no_nota_pembelian, tanggal_pembelian, id_pemasok, total_pembelian
+|Detail Pembelian||id_detail_pembelian|	|id_pembelian, id_barang, jumlah, harga_beli, subtotal
+Penjelasan:
+1. Entitas Pembelian menyimpan informasi utama pembelian barang dari pemasok.
+2. Entitas Detail Pembelian menyimpan daftar barang yang dibeli dalam setiap transaksi pembelian.
+3. Satu pembelian dapat memiliki banyak detail pembelian.
+4. Setiap detail pembelian mengacu pada satu barang.
+5. Atribut subtotal dihitung dari jumlah × harga_beli, sedangkan total_pembelian merupakan penjumlahan seluruh subtotal dalam satu transaksi pembelian.
+
+D.2 Menentukan Relasi dan Kardinalitas
+1. Kalimat Relasi dan Kardinalitas
+|No.|	|Relasi|	         |Kalimat Relasi|	                         |Kardinalitas|
+|1|	|Anggota – Transaksi|	|Anggota melakukan transaksi penjualan.||Satu anggota dapat melakukan 0 sampai banyak transaksi, sedangkan satu transaksi dilakukan oleh tepat 1 anggota.
+|2|	|Transaksi – Detail Transaksi|	|Transaksi memiliki detail transaksi.||Satu transaksi memiliki 1 sampai banyak detail transaksi, sedangkan satu detail transaksi hanya dimiliki oleh 1 transaksi.
+|3|	|Barang – Detail Transaksi|	|Barang tercatat dalam detail transaksi.||Satu barang dapat muncul pada 0 sampai banyak detail transaksi, sedangkan satu detail transaksi mengacu pada tepat 1 barang.
+|4|	|Transaksi – Pembayaran| |Transaksi memiliki pembayaran.||Satu transaksi memiliki 0 sampai banyak pembayaran, sedangkan satu pembayaran hanya terkait dengan 1 transaksi.
+|5|	|Pemasok – Barang||Pemasok memasok barang.| |Satu pemasok dapat memasok 0 sampai banyak barang, sedangkan satu barang dapat dipasok oleh 0 sampai banyak pemasok.
+
+Keterangan kardinalitas:
+- 0..1: tidak ada atau satu.
+- 1..1: tepat satu.
+- 0..N: tidak ada atau banyak.
+- 1..N: minimal satu atau banyak.
+
+2. Tabel Relasi dan Aturan Bisnis
+|Kode Relasi|	|Relasi|	|Aturan Bisnis|
+|R-01|	|Anggota – Transaksi|	|RB-01: Setiap transaksi penjualan harus tercatat atas nama satu anggota. Seorang anggota dapat melakukan beberapa transaksi.
+|R-02|	|Transaksi – Detail Transaksi|	|RB-02: Setiap transaksi harus memiliki minimal satu detail transaksi. Setiap detail transaksi hanya terkait dengan satu transaksi.
+|R-03|	|Barang – Detail Transaksi|	|RB-03: Setiap detail transaksi harus mengacu pada satu barang. Satu barang dapat muncul dalam banyak detail transaksi.
+|R-04|	|Transaksi – Pembayaran|	|RB-04: Setiap pembayaran harus terkait dengan satu transaksi. Satu transaksi dapat memiliki satu atau beberapa pembayaran, atau belum memiliki pembayaran jika belum dibayar.
+|R-05|	|Pemasok – Barang|	|RB-05: Pemasok dapat memasok beberapa barang dan satu barang dapat diperoleh dari beberapa pemasok.
+
+D.3 menggambar EDY
+file: p03_erd_kopma_25430008
+
+D.4 Memvalidasi ERD terhadap Kebutuhan Informasi
+
+1. Penelusuran Kebutuhan Informasi (KI)
+
+Berdasarkan kebutuhan informasi pada Pertemuan 2, ERD proyek Kopma perlu memastikan bahwa seluruh kebutuhan informasi dapat dipenuhi melalui entitas, atribut, dan relasi yang telah dirancang.
+
+| Kode KI | Kebutuhan Informasi | Jalur ERD | Status |
+|---|---|---|---|
+| KI-01 | Informasi data anggota Kopma | Anggota | Terpenuhi |
+| KI-02 | Informasi data barang dan stok | Barang | Terpenuhi |
+| KI-03 | Informasi transaksi penjualan beserta rincian barang | Anggota → Transaksi → Detail Transaksi → Barang | Terpenuhi |
+| KI-04 | Informasi pembayaran transaksi | Transaksi → Pembayaran | Terpenuhi |
+
+2. Evaluasi Kelengkapan ERD
+
+Berdasarkan hasil penelusuran, setiap kebutuhan informasi telah memiliki jalur yang dapat ditelusuri pada ERD. Entitas Anggota digunakan untuk menyimpan data anggota, sedangkan entitas Barang digunakan untuk menyimpan informasi barang dan stok. Informasi penjualan dapat diperoleh melalui hubungan Transaksi dan Detail Transaksi, sementara informasi pembayaran disimpan pada entitas Pembayaran.
+
+Entitas Pemasok juga digunakan untuk menyimpan data pihak yang memasok barang ke Kopma. Dengan demikian, keenam entitas kandidat telah memiliki fungsi dalam rancangan basis data.
+
+3. Perbaikan dan Catatan Validasi
+
+Beberapa hal yang perlu diperhatikan sebelum ERD dinyatakan final adalah:
+
+1. Memastikan setiap transaksi terhubung dengan satu anggota.
+2. Memastikan setiap transaksi memiliki minimal satu detail transaksi.
+3. Memastikan setiap detail transaksi terhubung dengan satu barang.
+4. Memastikan pembayaran terhubung dengan transaksi yang sesuai.
+5. Memastikan setiap barang memiliki hubungan dengan pemasok sesuai aturan bisnis Kopma.
+6. Memastikan atribut kunci primer (PK), kunci tamu (FK), dan kardinalitas ditampilkan dengan jelas.
+
+Apabila ditemukan kebutuhan informasi yang belum dapat ditelusuri, ERD perlu diperbaiki dengan menambahkan atau menyesuaikan entitas, atribut, maupun relasi.
+
+4. Kesimpulan Validasi
+
+Berdasarkan pemeriksaan awal, ERD proyek Kopma telah mencakup kebutuhan informasi utama mengenai anggota, barang, pemasok, transaksi penjualan, detail transaksi, dan pembayaran. Oleh karena itu, rancangan ERD dapat digunakan sebagai dasar untuk tahap perancangan berikutnya setelah jalur kebutuhan informasi dan aturan bisnis diperiksa kembali.
+
+5. Bukti Peninjauan ERD
+
+- Nama proyek:ERD Sistem Penjualan Kopma
+- Nama:Cahya Ayuningsih
+- NPM:25430008
+- Hasil peninjauan teman:Isi sesuai masukan teman yang benar-benar meninjau ERD.
+- Keputusan:Diterima / Ditolak (pilih sesuai hasil peninjauan).
+- Alasan:Tuliskan alasan berdasarkan hasil peninjauan yang sebenarnya.
+
+6. Bukti Git
+
+- Nama file:`p03_erd_kopma_25430008.drawio`
+- File gambar:`p03_erd_kopma_25430008.png`
+- Pesan commit:`p03: erd kopma`
+
+Setelah menyimpan perubahan ERD, lakukan commit menggunakan pesan `p03: erd kopma` sesuai instruksi praktikum.
+
+##4. Jawaban Titik Analisis
+
+1.no_anggota dan nim_anggota sama-sama unik. Mengapa buku ini tetap memakai 
+id_anggota sebagai kunci primer?
+Buku tetap menggunakan id_anggota sebagai kunci primer (Primary Key) karena ID tersebut dibuat khusus sebagai identitas anggota dan lebih stabil, sehingga tidak bergantung pada perubahan data administrasi mahasiswa. Sementara itu, no_anggota dan nim_anggota tetap dapat digunakan sebagai kunci alternatif karena nilainya unik.
+Risiko jika NIM dijadikan kunci primer: Jika NIM berubah, data pada tabel lain yang menggunakan NIM sebagai kunci tamu (Foreign Key) juga perlu diperbarui. Hal ini dapat menyebabkan ketidaksesuaian data dan menyulitkan pemeliharaan basis data.
+
+2.Sisi penjualan terhadap detail_penjualan bernilai satu atau banyak, bukan nol atau 
+banyak. Aturan bisnis mana yang memaksanya? Apakah aturan “minimal satu” ini dapat 
+dijaga oleh struktur tabel saja? Simpan jawaban Anda; Modul 14 akan menjawabnya 
+dengan transaksi.
+Aturan bisnis yang mewajibkan kardinalitas penjualan terhadap detail_penjualan bernilai satu atau banyak adalah setiap transaksi penjualan harus memiliki minimal satu detail penjualan, yaitu barang yang dijual beserta jumlah dan harganya.
+Aturan minimal satu ini tidak dapat dijamin hanya dengan struktur tabel dan constraint biasa. Kunci asing (Foreign Key) hanya memastikan bahwa detail penjualan terhubung dengan transaksi yang valid, tetapi tidak menjamin setiap transaksi memiliki detail penjualan. Untuk menjaga aturan tersebut, diperlukan mekanisme tambahan, seperti transaksi basis data, prosedur, atau trigger.
+
+3.Ketua ingin mengetahui “petugas gudang mana yang menerima barang dari pemasok”. 
+Apakah ERD saat ini dapat menjawabnya? Jika belum, relasi apa yang perlu ditambahkan, 
+dan apakah keputusan itu perlu dicatat sebagai aturan bisnis baru?
+ERD saat ini belum dapat menjawab pertanyaan tersebut karena belum terdapat entitas yang menyimpan data petugas gudang dan hubungan petugas dengan penerimaan barang dari pemasok.
+Untuk mengatasinya, perlu ditambahkan entitas Petugas Gudang dan entitas Penerimaan Barang. Entitas Penerimaan Barang dihubungkan dengan Pemasok dan Petugas Gudang agar sistem dapat mencatat pemasok yang mengirim barang serta petugas yang menerimanya.
+Keputusan ini perlu dicatat sebagai aturan bisnis baru, karena sistem harus menentukan bahwa setiap penerimaan barang dicatat atas tanggung jawab petugas tertentu. Dengan demikian, informasi penerimaan barang dapat ditelusuri dengan jelas.
+
+
+## 5. Hasil Latihan dan Modifikasi
+1. Menambahkan Kebutuhan Poin Loyalitas ke ERD Kopma
+Poin loyalitas dapat ditambahkan ke ERD Kopma untuk memberikan penghargaan kepada anggota berdasarkan transaksi pembelian yang dilakukan.
+Ada dua pilihan rancangan:
+- Poin sebagai atribut Anggota: Cocok jika sistem hanya perlu menyimpan jumlah poin terkini yang dimiliki anggota.
+- Poin sebagai entitas Riwayat Poin: Cocok jika sistem perlu mencatat penambahan dan pengurangan poin, tanggal perubahan, serta transaksi yang menyebabkan perubahan tersebut.
+Pilihan yang lebih baik adalah menggunakan entitas Riwayat Poin, karena data perubahan poin dapat ditelusuri dan diperiksa kembali.
+
+Contoh atribut entitas riwayat_poin:
+- id_riwayat_poin (PK)
+- id_anggota (FK)
+- id_transaksi (FK, boleh kosong jika perubahan bukan dari transaksi)
+- tanggal_poin
+- jenis_perubahan
+- jumlah_poin
+- keterangan
+Relasinya adalah satu anggota dapat memiliki banyak riwayat poin, dan satu transaksi dapat menghasilkan riwayat poin sesuai aturan program loyalitas.
+Alasan: Dengan adanya riwayat poin, sistem dapat mengetahui kapan poin bertambah atau berkurang, berapa jumlahnya, dan apa penyebab perubahan tersebut. Jumlah poin terkini dapat dihitung dari seluruh riwayat penambahan dan pengurangan poin.
+
+2. Relasi Penjualan–Barang secara Banyak-ke-Banyak Langsung
+Jika relasi antara penjualan dan barang dibuat langsung dengan kardinalitas banyak-ke-banyak (M:N), artinya satu penjualan dapat melibatkan banyak barang dan satu barang dapat muncul dalam banyak penjualan.
+Namun, jika entitas asosiatif detail_penjualan dihilangkan, beberapa informasi penting tidak memiliki tempat penyimpanan yang tepat, seperti:
+- Jumlah barang yang dibeli dalam setiap transaksi.
+- Harga barang saat transaksi dilakukan.
+- Subtotal setiap barang dalam transaksi.
+- Rincian barang untuk setiap nota penjualan.
+Contohnya, penjualan nomor PJ001 membeli 2 buku dengan harga Rp5.000 per buku dan 3 pensil dengan harga Rp2.000 per pensil. Tanpa detail_penjualan, sistem kesulitan menyimpan jumlah dan harga masing-masing barang pada transaksi tersebut.
+Kesimpulan: Relasi M:N langsung dapat menggambarkan hubungan antara penjualan dan barang, tetapi tidak cukup untuk menyimpan rincian transaksi. Oleh karena itu, entitas asosiatif detail_penjualan tetap diperlukan agar data jumlah, harga, dan subtotal setiap barang dapat disimpan dengan benar.
+
+
+## 6. Tugas Mandiri: Milestone Proyek NN
+6.1 gambar erd proyek
+file:p03_perpustakaan_25430008
+
+6.2 Tabel relasi dan kardinalitas
+|No.| |Hubungan entitas| Kardinalitas| |Aturan bisnis|
+|1| ||ANGGOTA — TRANSAKSI| |1 : 0..N| |Satu anggota dapat melakukan banyak transaksi; transaksi anggota mengacu pada satu anggota.|
+|2| |TRANSAKSI — DETAIL_TRANSAKSI| |1 : 1..N| |Setiap transaksi memiliki minimal satu detail barang.|
+|3| |BARANG — DETAIL_TRANSAKSI| |1 : 0..N| |Setiap detail transaksi mengacu pada satu barang.|
+|4| |TRANSAKSI — PEMBAYARAN| |1 : 1| |Setiap transaksi memiliki satu pembayaran.|
+|5| |PEMASOK — BARANG| |M : N*| |Satu pemasok dapat memasok banyak barang dan satu barang dapat berasal dari banyak pemasok.|
+
+6.3Tabel penelusuran KI ke jalur ERD
+|ID| |Kebutuhan informasi| |Jalur ERD| |Atribut utama|
+KI
+|KI-01| |Data anggota dan status keanggotaan| |ANGGOTA| |id_anggota, nama_anggota, nim, status_anggota|
+|KI-02| |Daftar barang, stok, dan harga| |BARANG| |kode_barang, nama_barang, stok, harga_barang|
+|KI-03| |Riwayat transaksi penjualan| |ANGGOTA → TRANSAKSI → DETAIL_TRANSAKSI → BARANG| |no_nota, tanggal_transaksi, kode_barang, jumlah|
+|KI-04| |Pembayaran dan total transaksi| |TRANSAKSI → DETAIL_TRANSAKSI → PEMBAYARAN| |harga_saat_transaksi, jumlah, jumlah_bayar|
+|KI-05| |Jumlah poin loyalitas anggota| |ANGGOTA → TRANSAKSI → DETAIL_TRANSAKSI| |poin dan nilai pembelian yang memenuhi syarat|
+
+6.4 Standar kelengkapan ERD konseptual
+
+Sebelum diagram diserahkan, pastikan hal-hal berikut sudah terpenuhi.
+
+Daftar pemeriksaan ERD
+
+Semua entitas memiliki nama dan atribut yang relevan.
+
+Setiap entitas memiliki identitas atau kandidat kunci yang jelas.
+
+Seluruh hubungan ant entitas memiliki nama atau makna yang jelas.
+
+Kardinalitas minimum dan maksimum ditunjukkan pada setiap hubungan.
+
+Entitas asosiatif DETAIL_TRANSAKSI menyelesaikan hubungan M:N transaksi dan barang.
+
+Atribut turunan seperti subtotal dan total ditandai sebagai hasil perhitungan.
+
+Aturan bisnis AB-01 sampai AB-08 dipertimbangkan dalam rancangan.
+
+Jalur setiap KI dapat ditelusuri melalui hubungan ERD.
+
+Hubungan PEMASOK dan BARANG serta aturan pembayaran telah dikonfirmasi.
+
+Diagram tidak memiliki hubungan atau atribut yang ambigu.
+
+6.5 Catatan tinjauan klien
+Tugas meminta minimal dua umpan balik teman sekelas dan keputusan atas setiap umpan balik. Contoh format di bawah ini dapat digunakan, tetapi isi umpan balik dan keputusan harus disesuaikan dengan hasil tinjauan yang benar-benar dilakukan.
+
+Umpan balik 1 — Hubungan pemasok dan barang
+Masukan peninjau: Hubungan antara PEMASOK dan BARANG belum menjelaskan apakah satu barang dapat dipasok oleh lebih dari satu pemasok.
+
+Keputusan: Menambahkan entitas asosiatif PENGADAAN apabila sistem harus menyimpan riwayat pengadaan dari banyak pemasok. Kardinalitas final ditetapkan setelah aturan bisnis dikonfirmasi.
+
+Umpan balik 2 — Perhitungan poin loyalitas
+Masukan peninjau: Penyimpanan poin saja belum cukup untuk menjelaskan asal penambahan dan pengurangan poin.
+
+Keputusan: Menambahkan RIWAYAT_POIN untuk mencatat perolehan dan penukaran poin sehingga perhitungan loyalitas dapat ditelusuri.
+
+6.6 Nama file yang disarankan
+p03_erd_25430008.drawio — diagram ERD yang dapat diedit.
+
+p03_erd_25430008.png — ekspor diagram ERD.
+
+p03_relasi_kardinalitas_25430008.pdf — tabel relasi dan kardinalitas.
+
+p03_penelusuran_KI_25430008.pdf — tabel penelusuran KI ke jalur ERD.
+
+
+## 7. Pembahasan dan Kendala
+
+Jelaskan hasil praktikum, kendala yang ditemukan, dan cara mengatasinya.
+Hasil Praktikum:
+Dari praktikum Modul 3, saya belajar membuat ERD untuk proyek Kopma. Saya berhasil menentukan enam entitas, yaitu Anggota, Barang, Pemasok, Transaksi, Detail Transaksi, dan Pembayaran, beserta atribut, kunci, dan hubungan antarentitas.
+Kendala yang Ditemukan:
+Kendala yang saya temukan adalah menentukan hubungan dan kardinalitas antarentitas agar sesuai dengan aturan bisnis. Saya juga masih perlu memahami cara menggambarkan ERD dengan benar menggunakan draw.io.
+Cara Mengatasinya:
+Saya mengatasi kendala tersebut dengan mempelajari kembali materi praktikum, memeriksa hubungan antarentitas, dan menyesuaikan ERD dengan kebutuhan data Kopma. Saya juga mencoba memahami fungsi setiap entitas agar rancangan ERD lebih jelas dan mudah dipahami.
+
+## 8. Kesimpulan
+
+Tuliskan kesimpulan berdasarkan tujuan dan hasil praktikum.
+Berdasarkan praktikum yang telah dilakukan, saya jadi lebih memahami cara membuat ERD, menentukan entitas, atribut, kunci, serta hubungan antarentitas dalam database. Saya juga belajar bahwa ERD harus dibuat sesuai dengan kebutuhan data agar informasi bisa tersimpan dengan baik dan mudah dicari. Dengan praktikum ini, saya bisa membuat rancangan awal database Kopma yang nantinya dapat dikembangkan ke tahap pembuatan tabel.
+
+## 9. Pernyataan Penggunaan AI
+Saya menggunakan ChatGPT sebagai alat bantu dalam pengerjaan Proyek Basis Data Milestone 3, khususnya untuk membantu menyusun ERD, menentukan hubungan dan kardinalitas antarentitas, serta membuat tabel penelusuran Kebutuhan Informasi (KI) terhadap jalur ERD. AI juga digunakan untuk memberikan saran perbaikan dan memeriksa kelengkapan rancangan berdasarkan dokumen kebutuhan data. Hasil yang diperoleh kemudian ditinjau dan disesuaikan dengan kebutuhan proyek. Saya tetap bertanggung jawab atas pemahaman, keputusan, dan hasil akhir tugas yang dikumpulkan.
+
+## 10. Bukti GitSelama mengerjakan laporan, saya menggunakan AI untuk membantu memahami materi ERD, menyusun jawaban dari titik analisis, menjelaskan hubungan antarentitas, dan merapikan isi laporan agar lebih mudah dipahami. Untuk bagian yang saya kerjakan sendiri, saya mempelajari kembali materi praktikum, memeriksa hasil ERD, serta menyesuaikan jawaban dengan instruksi yang diberikan. Saya juga perlu memastikan kembali hasilnya agar sesuai dengan kebutuhan proyek Kopma.
+
+- **Tautan repositori:** ...
+- **Branch:** `main`
+- **Hash commit:** ...
+- **Pesan commit:** ...
+
+## Checklist
+
+- [ ] Tujuan praktikum sudah ditulis.
+- [ ] Ringkasan dasar teori sudah ditulis.
+- [ ] Tangkapan layar dan keterangan sudah ditambahkan.
+- [ ] Jawaban titik analisis sudah lengkap.
+- [ ] Hasil latihan dan modifikasi sudah dicantumkan.
+- [ ] Tugas mandiri sudah dikerjakan.
+- [ ] Pembahasan, kendala, dan kesimpulan sudah ditulis.
+- [ ] Pernyataan penggunaan AI sudah dicantumkan.
+- [ ] Tautan repositori dan hash commit sudah dicantumkan.
